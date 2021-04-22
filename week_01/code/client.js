@@ -201,5 +201,5 @@ void async function () {
         }
     });
     let response = await request.send();
-    // console.log('response', JSON.stringify(response))
+    console.log('response', JSON.stringify(response))
 }()

@@ -7,11 +7,11 @@ const server = http.createServer((req, res) => {
     }).on('data', chunk => {
         console.log('body11:', chunk.toString());
 
-        body.push(chunk.toString());
+        body.push(chunk);
     }).on('end', () => {
         console.log('body22:', body);
 
-        body = Buffer.concat([Buffer.from(body)]).toString();
+        body = Buffer.concat(body).toString();
         console.log('body:', body);
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.end(`
@@ -19,16 +19,20 @@ const server = http.createServer((req, res) => {
 <head>
     <title>Document</title>
     <style>
-        body div {
+        body div img {
             width: 100px;
-            background-color: #fff;
+            background-color: #f0f;
+        }
+        body div #title {
+            color: "#ff0";
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
     <div>
         <img src="bg.png" alt="" />
-        <span>lalalla</span>
+        <span id="title">lalalla</span>
     </div>
     <script src="./kmp.js"></script>
 </body>

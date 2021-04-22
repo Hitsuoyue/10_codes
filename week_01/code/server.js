@@ -7,11 +7,11 @@ const server = http.createServer((req, res) => {
     }).on('data', chunk => {
         console.log('body11:', chunk.toString());
 
-        body.push(chunk.toString());
+        body.push(chunk);
     }).on('end', () => {
         console.log('body22:', body);
 
-        body = Buffer.concat([Buffer.from(body)]).toString();
+        body = Buffer.concat(body).toString();
         console.log('body:', body);
         res.writeHead(200, {'Content-Type': 'text/html'});
         res.end(`'Hello World\n'`);

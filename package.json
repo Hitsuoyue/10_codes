@@ -1,0 +1,23 @@
+{
+  "name": "10_codes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "css": "^3.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hitsuoyue/10_codes.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Hitsuoyue/10_codes/issues"
+  },
+  "homepage": "https://github.com/Hitsuoyue/10_codes#readme"
+}

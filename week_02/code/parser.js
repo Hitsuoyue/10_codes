@@ -1,13 +1,111 @@
+const css = require('css');
 
 let currentTextNode = null;
 let stack = [{type: "document", children: []}];
 
+let rules = [];
+function addCssRules(text) {
+    let ast = css.parse(text);
+    rules.push(...ast.stylesheet.rules);
+}
+
+function match(element, selector) {
+    //todo 感觉这里有问题
+    if(!selector || !element.attributes) {
+        return false;
+    }
+    if(selector[0] == '#') {
+        let attr = element.attributes.filter(attr => attr.name === 'id')[0];
+        if(attr && attr.value === selector.substring(1)) {
+            return true;
+        } 
+    } else if(selector[0] == '.') {
+        let attr = element.attributes.filter(attr => attr.name === 'class')[0];
+        if(attr && attr.value === selector.substring(1)) {
+            return true;
+        } 
+    } else {
+        if(element.tagName === selector) {
+            return true;
+        }
+    }
+}
+
+function specificity(selector) {
+    let p = [0, 0, 0, 0];
+    let selectorParts = selector.split(' ');
+    for(let part of selectorParts) {
+        let item = part[0];
+        if(item == '#') {
+            p[1] += 1;
+        } else if(item == '.') {
+            p[2] += 1;
+        } else {
+            p[3] += 1;
+        }
+    }
+    return p;
+}
+
+function compare(sp1, sp2) {
+    if(sp1[0] - sp2[0]) {
+        return sp1[0] - sp2[0];
+    }
+    if(sp1[1] - sp2[1]) {
+        return sp1[1] - sp2[1];
+    }
+    if(sp1[2] - sp2[2]) {
+        return sp1[2] - sp2[2];
+    }
+    return sp1[3] - sp2[3];
+}
+
+function computeCss(element) {
+    let elements = stack.slice().reverse();
+    if(!element.cumputedStyle) {
+        element.cumputedStyle = {};
+    }
+
+    for(let rule of rules) {
+        let selectorParts = rule.selectors[0].split(' ').reverse();
+        if(!match(element, selectorParts[0])) {
+            continue;
+        }
+
+        let j = 1;
+        for(let i = 0; i < elements.length; i++) {
+            if(match(elements[i], selectorParts[j])) {
+                j++;
+            }
+        }
+        //选择器与元素匹配
+        if(j >= selectorParts.length){
+            //计算specificity
+           let sp = specificity(rule.selectors[0]);
+           let cumputedStyle = element.cumputedStyle;
+           for(let declaration of rule.declarations) {
+               if(!cumputedStyle[declaration.property]) {
+                    cumputedStyle[declaration.property] = {};
+               }
+               if(!cumputedStyle[declaration.property].specificity) {
+                    cumputedStyle[declaration.property].value = declaration.value;
+                    cumputedStyle[declaration.property].specificity = sp;
+               } else if(compare(cumputedStyle[declaration.property].specificity, sp) < 0) {
+                    cumputedStyle[declaration.property].value = declaration.value;
+                    cumputedStyle[declaration.property].specificity = sp;
+               }
+           }
+        }
+
+
+    }
+}
 
 function emit(token) {
     // console.log('token', JSON.stringify(token));
     let top = stack[stack.length - 1];
     // console.log('top', JSON.stringify(top));
-    console.log('stack', stack);
+    // console.log('stack', stack);
 
 
     switch(token.type) {
@@ -28,7 +126,11 @@ function emit(token) {
                     });
                 }
             }
+
+            computeCss(element);
+
             top.children.push(element);
+            console.log('element', JSON.stringify(element, null, 4));
             if(!token.isSelfClosing) {
                 stack.push(element);
             }
@@ -40,6 +142,9 @@ function emit(token) {
             if(top.tagName != token.tagName) {
                 throw new Error(`Tag start end doesn't match!`);
             } else {
+                if(top.tagName === "style") {
+                    addCssRules(top.children[0].content);
+                }
                 stack.pop();
             }
 
@@ -59,7 +164,6 @@ function emit(token) {
             break; 
             
         default:
-            console.log('stack', JSON.stringify(stack));
             break;
             
     }
