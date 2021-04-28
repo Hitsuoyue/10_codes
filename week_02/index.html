@@ -7,5 +7,22 @@
 </head>
 <body>
     <script src="./kmp.js"></script>
+    <script>
+            let  xhr =  new XMLHttpRequest ();
+            xhr.open ("POST", "http://127.0.0.1:8080")
+            xhr.onreadystatechange = () => {
+ if (xhr.readyState !== 4) {
+ return;
+ }
+ const status = xhr.status;
+ if ((status >= 200 && status < 300) || status === 304) {
+ console.log('request success');
+ } else {
+ console.log('request error');
+ }
+ };
+            xhr.send(null);  //发送请求
+             console.log(xhr.responseText);  //接收数据
+    </script>
 </body>
 </html>

@@ -13,7 +13,7 @@ const server = http.createServer((req, res) => {
 
         body = Buffer.concat(body).toString();
         console.log('body:', body);
-        res.writeHead(302, {'Content-Type': 'text/html', 'Location': 'http://127.0.0.1:8080/test', 'Access-Control-Allow-Origin': '*'});
+        res.writeHead(200, {'Content-Type': 'text/html'});
         res.end(`
 <html lang="en">
 <head>
