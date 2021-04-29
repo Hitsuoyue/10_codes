@@ -5,13 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "pwa-node",
+            "type": "node",
             "request": "launch",
             "name": "Launch Program",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\week_02\\code\\client.js"
+            "program": "${workspaceFolder}/week_03/client.js"
         }
     ]
 }

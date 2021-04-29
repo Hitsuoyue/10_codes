@@ -20,11 +20,13 @@ function getStyle(element) {
 }
 
 function layout(element) {
+    // console.log('element--', element, element.computedStyle, JSON.stringify(element, null, 2))
     if(!element.computedStyle) {
         return;
     }
 
     let elementStyle = getStyle(element);
+    // console.log('elementStyle', JSON.stringify(elementStyle, null, 2))
 
     //非 flex 布局暂时不考虑
     if(elementStyle.display !== 'flex') {
@@ -148,7 +150,7 @@ function layout(element) {
             itemStyle[mainSize] = 0;
         }
 
-        if(flex) {
+        if(itemStyle.flex) {
             //不换行
             flexLine.push(item);
         } else if(style.flexWrap === 'nowrap' && isAutoMainSize){
@@ -274,7 +276,6 @@ function layout(element) {
     }
 
     //交叉轴计算 align-items, align-self
-    let crossSpace;
     if(!style[crossSize]) { //auto sizing
         crossSpace = 0;
         elementStyle[crossSize] = 0;
@@ -333,7 +334,7 @@ function layout(element) {
 
             let align = itemStyle.alignSelf || style.alignItems;
 
-            if(itemSyle[crossSize] === null) {
+            if(itemStyle[crossSize] === null) {
                 itemStyle[crossSize] = (align === 'stretch') ?
                 lineCrossSize : 0;
             }
@@ -352,13 +353,13 @@ function layout(element) {
             }
             if(align === 'stretch') {
                 itemStyle[crossStart] = crossBase;
-                itemStyle[crossEnd] = crossBase + crossSign * ((itemStyle[crossSize] !== null && itemStyle[crossSize] !== (void 0) ? itemStyle[crossSize] : lineCrossSize);
+                itemStyle[crossEnd] = crossBase + crossSign * ((itemStyle[crossSize] !== null && itemStyle[crossSize] !== (void 0) ? itemStyle[crossSize] : lineCrossSize));
                 itemStyle[crossSize] = crossSign * (itemStyle[crossEnd] - itemStyle[crossStart])
             }
         }
         crossBase += crossSign * (lineCrossSize + step);
     });
-    console.log('items', items);
+    console.log('flexLines', flexLines, JSON.stringify(flexLines));
 }
 
 module.exports = layout;

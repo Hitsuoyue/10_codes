@@ -19,20 +19,29 @@ const server = http.createServer((req, res) => {
 <head>
     <title>Document</title>
     <style>
-        body div img {
+        body #parent {
+            width: 400px;
+            height: 200px;
+            display: flex;
+            background-color: rgb(0,0,255);
+        }
+        body #parent #block1 {
+            flex: 1;
+            background-color: rgb(0,255,255);
+            height: 180px;
+        }
+        body #parent #block2 {
             width: 100px;
-            background-color: #f0f;
+            background-color: rgb(0,255,0);
+            height: 100px;
         }
-        body div #title {
-            color: "#ff0";
-            font-size: 16px;
-        }
+        
     </style>
 </head>
 <body>
-    <div>
-        <img src="bg.png" alt="" />
-        <span id="title">lalalla</span>
+    <div id="parent">
+        <div id="block1">block 11111</div>
+        <div id="block2">block 22222</div>
     </div>
     <script src="./kmp.js"></script>
 </body>

@@ -1,4 +1,5 @@
 const css = require('css');
+const layout  = require('./layout');
 
 let currentTextNode = null;
 let stack = [{type: "document", children: []}];
@@ -62,8 +63,8 @@ function compare(sp1, sp2) {
 
 function computeCss(element) {
     let elements = stack.slice().reverse();
-    if(!element.cumputedStyle) {
-        element.cumputedStyle = {};
+    if(!element.computedStyle) {
+        element.computedStyle = {};
     }
 
     for(let rule of rules) {
@@ -82,17 +83,18 @@ function computeCss(element) {
         if(j >= selectorParts.length){
             //计算specificity
            let sp = specificity(rule.selectors[0]);
-           let cumputedStyle = element.cumputedStyle;
+           let computedStyle = element.computedStyle;
+
            for(let declaration of rule.declarations) {
-               if(!cumputedStyle[declaration.property]) {
-                    cumputedStyle[declaration.property] = {};
+               if(!computedStyle[declaration.property]) {
+                    computedStyle[declaration.property] = {}    
                }
-               if(!cumputedStyle[declaration.property].specificity) {
-                    cumputedStyle[declaration.property].value = declaration.value;
-                    cumputedStyle[declaration.property].specificity = sp;
-               } else if(compare(cumputedStyle[declaration.property].specificity, sp) < 0) {
-                    cumputedStyle[declaration.property].value = declaration.value;
-                    cumputedStyle[declaration.property].specificity = sp;
+               if(!computedStyle[declaration.property].specificity) {
+                    computedStyle[declaration.property].value = declaration.value;
+                    computedStyle[declaration.property].specificity = sp;
+               } else if(compare(computedStyle[declaration.property].specificity, sp) < 0) {
+                    computedStyle[declaration.property].value = declaration.value;
+                    computedStyle[declaration.property].specificity = sp;
                }
            }
         }
@@ -130,7 +132,7 @@ function emit(token) {
             computeCss(element);
 
             top.children.push(element);
-            console.log('element', JSON.stringify(element, null, 4));
+            // console.log('element', JSON.stringify(element, null, 4));
             if(!token.isSelfClosing) {
                 stack.push(element);
             }
@@ -145,6 +147,7 @@ function emit(token) {
                 if(top.tagName === "style") {
                     addCssRules(top.children[0].content);
                 }
+                layout(top);
                 stack.pop();
             }
 
@@ -390,10 +393,11 @@ function selfClosingStartTag(c) {
 
 
 module.exports.parseHTML = function parseHTML(html) {
-    console.log('html', html)
+    // console.log('html', html)
     let state = data;
     for(let c of html) {
         state = state(c);
     }
     state = state(EOF);
+    return stack[0];
 }
