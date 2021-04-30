@@ -120,7 +120,7 @@ HTTP 协议建立在 TCP 连接基础上，允许浏览器向服务器获取资�
 栅格化结束后，合成线程会通知浏览器进程，浏览器进程根据收到的消息将内容显示到显示器上。
 
 ## 3 在浏览器里，从输入 URL 到页面展示，发生了什么？
-![image](./浏览器从输入 URL 到渲染出页面的过程.png)
+![image](https://upload-images.jianshu.io/upload_images/8879462-10fd6b7986ec7a04.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 
 
