@@ -7,7 +7,10 @@
     "css": "^3.0.0",
     "images": "^3.2.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "css-loader": "^5.2.6",
+    "style-loader": "^3.0.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
