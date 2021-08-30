@@ -1,4 +1,5 @@
 import { Component, createElement } from './framework';
+import { Timeline } from './animation';
 import './carousel.css';
 
 export default class Carousel extends Component {
@@ -15,6 +16,10 @@ export default class Carousel extends Component {
     render() {
         this.root = document.createElement('div', );
         this.root.classList.add('carousel');
+
+        let t1 = new Timeline()
+        t1.start();
+
         if(this.attributes.src && Array.isArray(this.attributes.src)) {
             for(let src of this.attributes.src) {
                 let child = document.createElement('div');
@@ -23,42 +28,73 @@ export default class Carousel extends Component {
             }
         }
 
-        let current = 0;
+        let currentIndex = 0;
+        let nextIndex = 1;
+        let current;
+        let next;
+        let flag;
+        
+        const setCarouselInter = () => {
+            return setInterval(() => {
+                let children = this.root.children;
+                let nextIndex = (currentIndex + 1) % children.length;
+                let current = children[currentIndex];
+                let next = children[nextIndex];
+    
+                next.style.transition = 'none';
+                next.style.transform = `translateX(${-100*(nextIndex - 1)}%)`;
+    
+                setTimeout(() => {
+                    next.style.transition = '';
+                    current.style.transform = `translateX(${-100*(currentIndex + 1)}%)`;
+                    next.style.transform = `translateX(${-100*(nextIndex)}%)`;
+                    currentIndex = nextIndex;
+                }, 16)
+    
+            }, 1000)
+        }
+
+        this.interval = setCarouselInter();
 
         this.root.addEventListener('mousedown', event => {
-            console.log('mousedown');
-
+            clearInterval(this.interval);
             let startX = event.clientX;
             let children = this.root.children;
-
+            for(let child of children) {
+                child.style.transition = 'none';
+            }
             const move = event => {
                 console.log('mousemove')
                 let x = event.clientX - startX;
-                console.log('`translateX(calc${-100*current}% + ${x}px)`;', `translateX(calc${-100*current}%${x}px)`)
-                for(let child of children) {
-                    child.style.transition = 'none';
-                    x > 0 ? child.style.transform = `translateX(calc(${-100*current}% + ${Math.abs(x)}px))` : 
-                    child.style.transform = `translateX(calc(${-100*current}% - ${Math.abs(x)}px))`;
-                    // child.style.transform = `translateX(calc(${-100*current}%${x}px))`;
-                    // `translateX(${x}px)`;
+                current = children[currentIndex];
+                if(x < 0) {
+                    flag = 1;
+                    //下一张
+                    nextIndex = (currentIndex + 1) % children.length;
+                    next = children[nextIndex];
+                    current.style.transform = `translateX(calc(${-100*currentIndex}% - ${Math.abs(x)}px))`
+                    next.style.transform = `translateX(calc(${-100*(nextIndex - 1)}% - ${Math.abs(x)}px))`
+                } else {
+                    //上一张
+                    flag = -1;
+                    nextIndex = currentIndex === 0 ? currentIndex - 1 + children.length : currentIndex - 1;
+                    next = children[nextIndex];
+                    console.log('nextIndex', nextIndex, 'currentIndex', currentIndex)
+                    current.style.transform = `translateX(calc(${-100*currentIndex}% + ${Math.abs(x)}px))`
+                    next.style.transform = `translateX(calc(${-100*(nextIndex + 1)}% + ${Math.abs(x)}px))`
                 }
-
             }
             const up = event => {
-                console.log('mouseup', this.root)
-                let x = event.clientX - startX;
+                current.style.transition = '';
+                next.style.transition = '';
+                setTimeout(() => {
+                    next.style.transition = '';
+                    current.style.transform = `translateX(${-100*(currentIndex + flag)}%)`;
+                    next.style.transform = `translateX(${-100*(nextIndex)}%)`;
+                    currentIndex = nextIndex;
+                }, 16);
+                this.interval = setCarouselInter();
 
-                const width = this.root.offsetWidth;
-                if(x < 0) {
-                    current++;
-                } else {
-                    current = current === 0 ? current - 1 + children.length : current - 1;
-                }
-                // console.log(width, x, x / width, 'direction', direction)
-                for(let child of children) {
-                    child.style.transition = 'none';
-                    child.style.transform = `translateX(${-100*current}%)`;
-                }
                 document.removeEventListener('mousemove', move)
                 document.removeEventListener('mouseup', up)
             }
@@ -66,26 +102,6 @@ export default class Carousel extends Component {
             document.addEventListener('mousemove', move);
             document.addEventListener('mouseup', up);
         });
-
-        // let currentIndex = 0;
-        // setInterval(() => {
-        //     let children = this.root.children;
-        //     let nextIndex = (currentIndex + 1) % children.length;
-
-        //     let current = children[currentIndex];
-        //     let next = children[nextIndex];
-
-        //     next.style.transition = 'none';
-        //     next.style.transform = `translateX(${-100*(nextIndex - 1)}%)`;
-
-        //     setTimeout(() => {
-        //         next.style.transition = '';
-        //         current.style.transform = `translateX(${-100*(currentIndex + 1)}%)`;
-        //         next.style.transform = `translateX(${-100*(nextIndex)}%)`;
-        //         currentIndex = nextIndex;
-        //     }, 16)
-
-        // }, 1000)
 
         return this.root;
     }
