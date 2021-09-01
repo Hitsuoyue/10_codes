@@ -42,6 +42,7 @@ export default class Carousel extends Component {
 
         this.root.addEventListener('pan', event => {
             let x = event.clientX - event.startX;
+            console.log('position', position)
 
             // let current = Math.floor(Math.abs(position) / 800);
             // let current = ((length * width - position) / width) % length;
@@ -51,76 +52,47 @@ export default class Carousel extends Component {
             // let current = x > 0 ? position + 1 : position - 1;
 
             let lastIndex = 0, nextIndex = 0;
-            if(x < 0) {
-                lastIndex = (position+ length)%length;
-                nextIndex = (position + 1) % length;
+            if(x > 0) {
+                lastIndex = position;
+                nextIndex = position + 1;
             } else {
-                lastIndex = (position - 1 + length)%length;
-                nextIndex = (position+ length)%length;
+                lastIndex = position - 1;
+                nextIndex = position;
             }
+            console.log('lastIndex', lastIndex, 'nextIndex', nextIndex)
+
+
 
             children[lastIndex].style.transition = 'none';
-            children[nextIndex].style.transition = 'none';
+            children[lastIndex].style.transform = `translateX(calc${position}%+${x}px)`;
 
-
-            if(x > 0) {
-                children[lastIndex].style.transform = `translateX(calc-${position * 100}% + ${x}px)`;
-                children[nextIndex].style.transform = `translateX(calc-${position * 100}% + ${x}px)`;
-
-            } else {
-            // console.log('lastIndex', lastIndex, 'nextIndex', nextIndex, `translateX(calc${position}%-${Math.abs(x)}px)`)
-            console.log('lastIndex', lastIndex, 'nextIndex', nextIndex, `translateX(calc(-${position * 100}% - ${Math.abs(x)}px))`)
-
-                children[lastIndex].style.transform = `translateX(calc(-${position * 100}% - ${Math.abs(x)}px))`;
-                children[nextIndex].style.transform = `translateX(calc(-${position * 100}% - ${Math.abs(x)}px))`;
-
-            }
-
-            // let otherIndex = (current + children.length - x / Math.abs(x)) % children.length;
-            // console.log('otherIndex', otherIndex)
+            let otherIndex = (current + children.length - x / Math.abs(x)) % children.length;
+            console.log('otherIndex', otherIndex)
             
-            
-            // children[nextIndex].style.transform = `translateX(${x - (nextIndex + x / Math.abs(x)) * 800}px)`;
+            children[otherIndex].style.transition = 'none';
+            children[otherIndex].style.transform = `translateX(${x - (otherIndex + x / Math.abs(x)) * 800}px)`;
         })
         this.root.addEventListener('panend', event => {
             let x = event.clientX - event.startX;
-            // let current = Math.floor(Math.abs(position) / 800);
-            // console.log('x', x);
-            // // position = position - Math.round(x / 800);
-            // console.log('current', current)
+            let current = Math.floor(Math.abs(position) / 800);
+            console.log('x', x);
+            // position = position - Math.round(x / 800);
+            console.log('current', current)
 
-            // children[current].style.transition = 'none';
-            // children[current].style.transform = `translateX(${position}px)`;
+            children[current].style.transition = 'none';
+            children[current].style.transform = `translateX(${position}px)`;
 
-            // // ?????
-            // let newX = Math.round(x / 800) * 800;
-            // console.log('x', x, position)
-            // let newPos = newX;
+            // ?????
+            let newX = Math.round(x / 800) * 800;
+            console.log('x', x, position)
+            let newPos = newX;
 
-            // let otherIndex = (current + children.length - newX / Math.abs(newX)) % children.length;
-            // console.log('otherIndex', otherIndex)
+            let otherIndex = (current + children.length - newX / Math.abs(newX)) % children.length;
+            console.log('otherIndex', otherIndex)
             
-            // children[otherIndex].style.transition = '';
-            // children[otherIndex].style.transform = `translateX(${newPos - (otherIndex + x / Math.abs(x)) * 800}px)`;
-            // position = Math.round(newPos / 800);
-
-
-            let lastIndex = 0, nextIndex = 0;
-            if(x < 0) {
-                lastIndex = (position+ length)%length;
-                nextIndex = (position + 1) % length;
-            } else {
-                lastIndex = (position - 1 + length)%length;
-                nextIndex = (position+ length)%length;
-            }
-            position = position - Math.round(x / width);
-            console.log('lastIndex', lastIndex, 'nextIndex', nextIndex, 'position', position, )
-            children[lastIndex].style.transition = '';
-            children[nextIndex].style.transition = '';
-
-            children[lastIndex].style.transform = `translateX(-${position * 100}%)`;
-            children[nextIndex].style.transform = `translateX(-${position * 100}%)`;
-
+            children[otherIndex].style.transition = '';
+            children[otherIndex].style.transform = `translateX(${newPos - (otherIndex + x / Math.abs(x)) * 800}px)`;
+            position = Math.round(newPos / 800);
         })
 
         // let element = document.createElement('div');

@@ -51,7 +51,7 @@ export default class Carousel extends Component {
             // let current = x > 0 ? position + 1 : position - 1;
 
             let lastIndex = 0, nextIndex = 0;
-            if(x < 0) {
+            if(x > 0) {
                 lastIndex = (position+ length)%length;
                 nextIndex = (position + 1) % length;
             } else {
@@ -64,15 +64,15 @@ export default class Carousel extends Component {
 
 
             if(x > 0) {
-                children[lastIndex].style.transform = `translateX(calc-${position * 100}% + ${x}px)`;
-                children[nextIndex].style.transform = `translateX(calc-${position * 100}% + ${x}px)`;
+                children[lastIndex].style.transform = `translateX(calc${position * 100}% + ${x}px)`;
+                children[nextIndex].style.transform = `translateX(calc${position * 100}% + ${x}px)`;
 
             } else {
             // console.log('lastIndex', lastIndex, 'nextIndex', nextIndex, `translateX(calc${position}%-${Math.abs(x)}px)`)
-            console.log('lastIndex', lastIndex, 'nextIndex', nextIndex, `translateX(calc(-${position * 100}% - ${Math.abs(x)}px))`)
+            console.log('lastIndex', lastIndex, 'nextIndex', nextIndex, `translateX(calc(${position * 100}% - ${Math.abs(x)}px))`)
 
-                children[lastIndex].style.transform = `translateX(calc(-${position * 100}% - ${Math.abs(x)}px))`;
-                children[nextIndex].style.transform = `translateX(calc(-${position * 100}% - ${Math.abs(x)}px))`;
+                children[lastIndex].style.transform = `translateX(calc(${position * 100}% - ${Math.abs(x)}px))`;
+                children[nextIndex].style.transform = `translateX(calc(${position * 100}% - ${Math.abs(x)}px))`;
 
             }
 
@@ -106,20 +106,18 @@ export default class Carousel extends Component {
 
 
             let lastIndex = 0, nextIndex = 0;
-            if(x < 0) {
+            if(x > 0) {
                 lastIndex = (position+ length)%length;
                 nextIndex = (position + 1) % length;
             } else {
                 lastIndex = (position - 1 + length)%length;
                 nextIndex = (position+ length)%length;
             }
-            position = position - Math.round(x / width);
+            position = position + Math.round(x / width);
             console.log('lastIndex', lastIndex, 'nextIndex', nextIndex, 'position', position, )
-            children[lastIndex].style.transition = '';
-            children[nextIndex].style.transition = '';
 
-            children[lastIndex].style.transform = `translateX(-${position * 100}%)`;
-            children[nextIndex].style.transform = `translateX(-${position * 100}%)`;
+            children[lastIndex].style.transform = `translateX(${position * 100}%)`;
+            children[nextIndex].style.transform = `translateX(${position * 100}%)`;
 
         })
 

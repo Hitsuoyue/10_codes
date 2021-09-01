@@ -69,7 +69,7 @@ export default class Carousel extends Component {
 
             } else {
             // console.log('lastIndex', lastIndex, 'nextIndex', nextIndex, `translateX(calc${position}%-${Math.abs(x)}px)`)
-            console.log('lastIndex', lastIndex, 'nextIndex', nextIndex, `translateX(calc(-${position * 100}% - ${Math.abs(x)}px))`)
+            console.log('lastIndex', lastIndex, 'nextIndex', nextIndex, `translateX(calc(${position * 100}% - ${Math.abs(x)}px))`)
 
                 children[lastIndex].style.transform = `translateX(calc(-${position * 100}% - ${Math.abs(x)}px))`;
                 children[nextIndex].style.transform = `translateX(calc(-${position * 100}% - ${Math.abs(x)}px))`;
