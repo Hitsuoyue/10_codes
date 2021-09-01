@@ -64,8 +64,8 @@ export default class Carousel extends Component {
             children[current].style.transform = `translateX(${position}px)`;
 
             // ?????
-            x = Math.round(x / 500) * 500;
-            console.log('x', x, position)
+            x = Math.round(x / 500);
+            console.log('x', x)
 
             let otherIndex = (current + children.length - x / Math.abs(x)) % children.length;
             console.log('otherIndex', otherIndex)
