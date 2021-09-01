@@ -139,6 +139,11 @@ function closure(state) {
         let symbol = queue.shift();
         if(syntax[symbol]) {
             for(let rule of syntax[symbol]) {
+<<<<<<< HEAD
+=======
+                // console.log('syntax', syntax)
+                // console.log('rule', rule, symbol, syntax[symbol], syntax['PropertyList'])
+>>>>>>> 87e02f4b228244824848c6a58579146a31371b84
                 if(!state[rule[0]]) {
                     queue.push(rule[0]);
                 }
@@ -165,6 +170,10 @@ function closure(state) {
             closure(state[symbol]);
         }
     }
+<<<<<<< HEAD
+=======
+    console.log('state', state)
+>>>>>>> 87e02f4b228244824848c6a58579146a31371b84
 
 }
 
@@ -176,6 +185,7 @@ let start = {
     'Program': end
 }
 
+<<<<<<< HEAD
 export function parse(source) {
 
     let stack = [start];
@@ -220,3 +230,56 @@ export function parse(source) {
 }
 
 parse(start);
+=======
+closure(start);
+
+
+// let source = `
+//     var a;
+// `
+
+// export function parse(source) {
+
+//     let stack = [start];
+//     let symbolStack = [];
+//     function reduce() {
+//         let state = stack[stack.length - 1];
+
+//         if(state.$reduceType) {
+//             let children = [];
+//             for(let i = 0; i < state.$reduceType; i++) {
+//                 stack.pop();
+//                 children.push(symbolStack.pop());
+//             }
+
+//             return {
+//                 type: state.$reduceType,
+//                 children: children.reverse()
+//             }
+//         } else {
+//             throw new Error('unexpected token')
+//         }
+//     }
+
+//     function shift(symbol) {
+//         let state = stack[stack.length - 1];
+
+//         if(symbolStack.type in state) {
+//             stack.push(state[symbol.type]);
+//             symbolStack.push(symbol);
+//         } else {
+//             shift(reduce());
+//             shift(symbol)
+//         }
+//     }
+
+//     for(let symbol of scan(source)) {
+//         shift(symbol);
+//     }
+
+//     return reduce();
+
+// }
+
+// parse(source);
+>>>>>>> 87e02f4b228244824848c6a58579146a31371b84

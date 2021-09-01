@@ -1,3 +1,17 @@
+export class Dispatch {
+    constructor(element) {
+        this.element = element;
+    }
+    dispatch(type, properties) {
+        let event = new Event(type);
+        for(let name in properties) {
+            event[name] = properties[name];
+        };
+        this.element.dispatchEvent(event);
+    }
+}
+
+
 
 export function dispatch(type, properties) {
     let event = new Event(type);
@@ -5,7 +19,6 @@ export function dispatch(type, properties) {
         event[name] = properties[name];
     };
     element.dispatchEvent(event);
-
 }
 
 
@@ -16,11 +29,9 @@ export class Listener {
     constructor(element, recognizer) {
         let isListeningMouse = false;
         let contexts = new Map();
-                
-
+            
         element.addEventListener('mousedown', () => {
             let context = Object.create(null);
-            console.log('mousedown')
             contexts.set(`mouse${event.button}`, context);
             recognizer.start(event, context);
             let mousemove = event => {
@@ -86,8 +97,8 @@ export class Listener {
 }
 
 export class Recognizer {
-    constructor(dispatch) {
-        this.dispatch = dispatch;
+    constructor(dispatcher) {
+        this.dispatcher = dispatcher;
     }
     start (point, context) {
         context.startX = point.clientX, context.startY = point.clientY; 
@@ -104,7 +115,7 @@ export class Recognizer {
         context.isPress = false;
     
         context.handler = setTimeout(() => {
-            this.dispatch('press', {});
+            this.dispatcher.dispatch('press', {});
             context.isPan = false;
             context.isTap = false;
             context.isPress = true;
@@ -121,7 +132,7 @@ export class Recognizer {
             context.isTap = false;
             context.isPress = false;
             context.isVertical = Math.abs(dx) < Math.abs(dy);
-            this.dispatch('panstart', {
+            this.dispatcher.dispatch('panstart', {
                 startX: context.startX,
                 startY: context.startY,
                 clientX: point.clientX,
@@ -132,7 +143,7 @@ export class Recognizer {
          }
     
          if(context.isPan) {
-            this.dispatch('pan', {
+            this.dispatcher.dispatch('pan', {
                 startX: context.startX,
                 startY: context.startY,
                 clientX: point.clientX,
@@ -152,12 +163,12 @@ export class Recognizer {
     
     end (point, context) {
         if(context.isTap) {
-            dispatch('tap', {});
+            this.dispatcher.dispatch('tap', {});
             clearTimeout(context.handler);
         }
 
         if(context.isPress) {
-            dispatch('pressend', {});
+            this.dispatcher.dispatch('pressend', {});
         }
     
         let d, v;
@@ -172,7 +183,7 @@ export class Recognizer {
         if(v > 1.5) {
             context.isFlick = true;
 
-            this.dispatch('flick', {
+            this.dispatcher.dispatch('flick', {
                 startX: context.startX,
                 startY: context.startY,
                 clientX: point.clientX,
@@ -187,7 +198,7 @@ export class Recognizer {
         }
 
         if(context.isPan) {
-            this.dispatch('panend', {
+            this.dispatcher.dispatch('panend', {
                 startX: context.startX,
                 startY: context.startY,
                 clientX: point.clientX,
@@ -201,27 +212,26 @@ export class Recognizer {
     
     cancel (point, context) {
         clearTimeout(context.handler);
-        this.dispatch('cancel', {});
+        this.dispatcher.dispatch('cancel', {});
     }
 }
 
 export function enableGesture(element) {
-    console.log('Recognizer', Recognizer, 'element', element)
-    new Listener(element, new Recognizer(dispatch))
+    new Listener(element, new Recognizer(new Dispatch(element)))
 }
 
 
 
-let element = document.createElement('div');
-element.id = 'gesture';
-element.style.width = '200px';
-element.style.height = '200px';
-element.style.background = '#ccc';
-element.oncontextmenu = (e) => e.preventDefault();
+// let element = document.createElement('div');
+// element.id = 'gesture';
+// element.style.width = '200px';
+// element.style.height = '200px';
+// element.style.background = '#ccc';
+// element.oncontextmenu = (e) => e.preventDefault();
 
 
 
-document.body.appendChild(element);
+// document.body.appendChild(element);
 
 // enableGesture(element);
 

@@ -4,6 +4,7 @@ const fs = require('fs');
 const server = http.createServer((req, res) => {
     var url = req.url; 
     var documentRoot = '/Users/yuesuo/Desktop/study/10期/homework/week_05'
+    // var documentRoot = '/Users/yuesuo/Desktop/study/10期/homework/week_05'
     var file = documentRoot + url;
     console.log('url', url);
     const type = url.split('.')[url.split('.').length - 1];

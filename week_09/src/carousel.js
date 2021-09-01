@@ -2,6 +2,8 @@ import { Component, createElement } from './framework';
 import { Timeline, Animation } from './animation';
 import './carousel.css';
 import './gesture';
+import { enableGesture } from './gesture';
+import { cubicBezier } from './ease';
 
 export default class Carousel extends Component {
     constructor() {
@@ -21,6 +23,12 @@ export default class Carousel extends Component {
         let element = document.createElement('div');
         element.id = 'test';
         document.body.appendChild(element);
+
+        enableGesture(element);
+
+        element.addEventListener('tap', () => {
+            console.log('tap----')
+        })
 
         let pauseBtn = document.createElement('button');
         pauseBtn.id = 'pause-btn';

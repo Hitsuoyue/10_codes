@@ -20,47 +20,84 @@ export default class Carousel extends Component {
         this.root = document.createElement('div', );
         this.root.classList.add('carousel');
 
-        let element = document.createElement('div');
-        element.id = 'test';
-        document.body.appendChild(element);
+        if(this.attributes.src && Array.isArray(this.attributes.src)) {
+            console.log('this.attributes.src', this.attributes.src)
+            for(let src of this.attributes.src) {
+                let child = document.createElement('div');
+                child.style.backgroundImage = `url('${src}')`;
+                this.root.appendChild(child);
+            }
+        }
 
-        enableGesture(element);
+        enableGesture(this.root);
 
-        element.addEventListener('tap', () => {
+        this.root.addEventListener('tap', () => {
             console.log('tap----')
         })
 
-        let pauseBtn = document.createElement('button');
-        pauseBtn.id = 'pause-btn';
-        pauseBtn.innerHTML = 'pause';
-        document.body.appendChild(pauseBtn);
+        let children = this.root.children;
+        let position = 0;
 
-        let resumeBtn = document.createElement('button');
-        resumeBtn.id = 'resume-btn';
-        resumeBtn.innerHTML = 'resume';
-        document.body.appendChild(resumeBtn);
+        this.root.addEventListener('pan', event => {
+            let x = event.clientX - event.startX;
+            let current = Math.floor(Math.abs(position) / 800);
+            // console.log('current', current)
 
+            children[current].style.transition = 'none';
+            children[current].style.transform = `translateX(${position}px)`;
 
+            let otherIndex = (current + children.length - x / Math.abs(x)) % children.length;
+            // console.log('otherIndex', otherIndex)
+            
+            children[otherIndex].style.transition = 'none';
+            children[otherIndex].style.transform = `translateX(${position - (otherIndex + x / Math.abs(x)) * 800}px)`;
+            position = x;
+        })
+        this.root.addEventListener('panend', event => {
+            let x = event.clientX - event.startX;
+            let current = Math.floor(Math.abs(position) / 800);
+            console.log('x', x);
+            position = position - Math.round(x / 500);
+            console.log('current', current)
 
-        let t1 = new Timeline();
+            children[current].style.transition = 'none';
+            children[current].style.transform = `translateX(${position}px)`;
 
-        pauseBtn.addEventListener('click', () => t1.pause())
+            // ?????
+            x = Math.round(x / 500);
+            let otherIndex = (current + children.length - x / Math.abs(x)) % children.length;
+            console.log('otherIndex', otherIndex)
+            
+            children[otherIndex].style.transition = 'none';
+            children[otherIndex].style.transform = `translateX(${position - (otherIndex + x / Math.abs(x)) * 800}px)`;
+            position = x;
+        })
 
-        resumeBtn.addEventListener('click', () => t1.resume())
+        // let element = document.createElement('div');
+        // element.id = 'test';
+        // document.body.appendChild(element);
 
+        // let pauseBtn = document.createElement('button');
+        // pauseBtn.id = 'pause-btn';
+        // pauseBtn.innerHTML = 'pause';
+        // document.body.appendChild(pauseBtn);
 
-        let ele = document.getElementById('test');
+        // let resumeBtn = document.createElement('button');
+        // resumeBtn.id = 'resume-btn';
+        // resumeBtn.innerHTML = 'resume';
+        // document.body.appendChild(resumeBtn);        
+
+        // pauseBtn.addEventListener('click', () => t1.pause())
+
+        // resumeBtn.addEventListener('click', () => t1.resume())
+
+        // let t1 = new Timeline();
+        // let ele = document.getElementById('test');
         // console.log('ele', ele.style)
-        t1.add(new Animation(ele.style, 'transform', 0, 600, 3000, 1000, undefined, v => `translateX(${v}px)`))
-        t1.start();
+        // t1.add(new Animation(ele.style, 'transform', 0, 600, 3000, 1000, undefined, v => `translateX(${v}px)`))
+        // t1.start();
 
-        // if(this.attributes.src && Array.isArray(this.attributes.src)) {
-        //     for(let src of this.attributes.src) {
-        //         let child = document.createElement('div');
-        //         child.style.backgroundImage = `url('${src}')`;
-        //         this.root.appendChild(child);
-        //     }
-        // }
+
 
         // let currentIndex = 0;
         // let nextIndex = 1;
