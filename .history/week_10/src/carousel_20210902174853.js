@@ -95,12 +95,6 @@ export default class Carousel extends Component {
 
             console.log('current', current, 'left', left, 'right', right)
 
-
-            children[current].style.transform = `translateX(calc(-${(position - direction) * 100}%))`;
-            children[left].style.transform = `translateX(calc(-${(left + 1 - direction) * 100}%))`;
-            children[right].style.transform = `translateX(calc(${-(right - 1 - direction) * 100}%))`;
-
-
             let direction = Math.round(Math.abs(x) / width);
             if(x > 0) {
                 timeline.add(new Animation(children[current].style, 'transform', 

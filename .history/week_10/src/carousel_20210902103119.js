@@ -3,7 +3,7 @@ import { Timeline, Animation } from './animation';
 import './carousel.css';
 import './gesture';
 import { enableGesture } from './gesture';
-import { linear } from './ease';
+import { cubicBezier } from './ease';
 
 export default class Carousel extends Component {
     constructor() {
@@ -25,14 +25,13 @@ export default class Carousel extends Component {
             for(let src of this.attributes.src) {
                 let child = document.createElement('div');
                 child.style.backgroundImage = `url('${src}')`;
+                child.style.position = 'absolute';
+                child.style.left = '';
                 this.root.appendChild(child);
             }
         }
 
         enableGesture(this.root);
-
-        let timeline = new Timeline();
-        timeline.start();
 
         // this.root.addEventListener('tap', () => {
         //     console.log('tap----')
@@ -40,23 +39,11 @@ export default class Carousel extends Component {
 
         let children = this.root.children;
         let length = children.length;
-        const width = 500;
+        const width = 800;
         let position = 0;
-        const duration = 1500;
-
-        let t = 0;
-        let ax = 0;
-
-        this.root.addEventListener('start', event => {
-            timeline.pause();
-            clearInterval(this.interval);
-            let progress = (Date.now() - t) / duration;
-            ax = t === 0 ? 0 : linear(progress) * width - width;
-         })
 
         this.root.addEventListener('pan', event => {
-            let x = event.clientX - event.startX - ax;
-            console.log('x', x);
+            let x = event.clientX - event.startX;
 
             let current = position;
             console.log('current', current);
@@ -79,12 +66,7 @@ export default class Carousel extends Component {
             }
         })
         this.root.addEventListener('panend', event => {
-
-            timeline.reset();
-            timeline.start();
-            this.interval = setCarouselInter();
-
-            let x = event.clientX - event.startX - ax;
+            let x = event.clientX - event.startX;
             let current = position;
             let left = (current - 1 + 4) % 4;
             let right = (current + 1 + 4) % 4;
@@ -93,39 +75,17 @@ export default class Carousel extends Component {
             children[left].style.transition = '';
             children[right].style.transition = '';
 
+            position = (position - Math.round(x / width) + length)%length;
             console.log('current', current, 'left', left, 'right', right)
 
+            console.log('position', position,  `translateX(-${position * 100}px)`,  `translateX(-${(left+1) * 100}%px)`)
 
-            children[current].style.transform = `translateX(calc(-${(position - direction) * 100}%))`;
-            children[left].style.transform = `translateX(calc(-${(left + 1 - direction) * 100}%))`;
-            children[right].style.transform = `translateX(calc(${-(right - 1 - direction) * 100}%))`;
-
-
-            let direction = Math.round(Math.abs(x) / width);
-            if(x > 0) {
-                timeline.add(new Animation(children[current].style, 'transform', 
-                `calc(-${(position) * 100}% + ${x}px)`, `calc(-${(position - direction) * 100}%)`, duration, 0, linear, v => `translateX(${v})`
-                ));
-                timeline.add(new Animation(children[left].style, 'transform', 
-                `calc(-${(left + 1) * 100}%) + ${x}px)`, `calc(-${(left + 1 - direction) * 100}%)`, duration, 0, linear, v => `translateX(${v})`
-                ));
-                timeline.add(new Animation(children[right].style, 'transform', 
-                `calc(${-(right - 1) * 100}%  + ${x}px)`, `calc(${-(right - 1 - direction) * 100}%)`, duration, 0, linear, v => `translateX(${v})`
-                ));
-                // children[current].style.transform = `translateX(calc(-${(position - direction) * 100}%))`;
-                // children[left].style.transform = `translateX(calc(-${(left + 1 - direction) * 100}%))`;
-                // children[right].style.transform = `translateX(calc(${-(right - 1 - direction) * 100}%))`;
-
-            } else {
-                // timeline.add(new Animation(children[current].style, 'transform', 
-                // `calc(-${(position+1) * 100}% - ${width * Math.round(Math.abs(x) / width)}px)`, `calc(-${position * 100}% - ${width * Math.round(Math.abs(x) / width)}px)`, duration, 0, linear, v => `translateX(${v})`
-                // ));
-                children[current].style.transform = `translateX(calc(-${(position + direction) * 100}%))`;
-                children[left].style.transform = `translateX(calc(-${(left + 1 + direction) * 100}%))`;
-                children[right].style.transform = `translateX(calc(${-(right - 1 + direction) * 100}%))`;
-            }
-
-            position = (position - Math.round(x / width) + length) % length;
+            //这里切换的时候有问题
+            children[current].style.transform = `translateX(-${position * 100}%)`;
+            children[left].style.transform = `translateX(-${(left + 1)  * 100}%)`;
+            children[right].style.transform = `translateX(${-right * 100}%)`;
+            // children[lastIndex].style.transform = `translateX(-${position * 100}%)`;
+            // children[nextIndex].style.transform = `translateX(-${position * 100}%)`;
 
         })
 
@@ -161,34 +121,27 @@ export default class Carousel extends Component {
         // let next;
         // let flag;
         
-        const setCarouselInter = () => {
-            return setInterval(() => {
-
-                t = Date.now();
-
-                let children = this.root.children;
-                let nextIndex = (position + 1) % children.length;
-                let current = children[position];
-                let next = children[nextIndex];
+        // const setCarouselInter = () => {
+        //     return setInterval(() => {
+        //         let children = this.root.children;
+        //         let nextIndex = (currentIndex + 1) % children.length;
+        //         let current = children[currentIndex];
+        //         let next = children[nextIndex];
     
-                next.style.transition = 'none';
-                next.style.transform = `translateX(${-100*(nextIndex - 1)}%)`;
-                console.log('current', position, 'next', nextIndex, `translateX(${-100*(nextIndex - 1)}%)`)
+        //         next.style.transition = 'none';
+        //         next.style.transform = `translateX(${-100*(nextIndex - 1)}%)`;
     
-
-                timeline.add(new Animation(current.style, 'transform', 
-                    -100*position, -100*(position + 1), duration, 0, linear, v => `translateX(${v}%)`
-                ));
+        //         setTimeout(() => {
+        //             next.style.transition = '';
+        //             current.style.transform = `translateX(${-100*(currentIndex + 1)}%)`;
+        //             next.style.transform = `translateX(${-100*(nextIndex)}%)`;
+        //             currentIndex = nextIndex;
+        //         }, 16)
     
-                timeline.add(new Animation(next.style, 'transform', 
-                    -100*(nextIndex - 1), -100*(nextIndex), duration, 0, linear, v => `translateX(${v}%)`
-                ));
+        //     }, 3000)
+        // }
 
-                position = nextIndex;
-            }, 2000)
-        }
-
-        this.interval = setCarouselInter();
+        // this.interval = setCarouselInter();
 
         // this.root.addEventListener('mousedown', event => {
         //     clearInterval(this.interval);

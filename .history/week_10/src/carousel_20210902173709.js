@@ -95,34 +95,27 @@ export default class Carousel extends Component {
 
             console.log('current', current, 'left', left, 'right', right)
 
-
-            children[current].style.transform = `translateX(calc(-${(position - direction) * 100}%))`;
-            children[left].style.transform = `translateX(calc(-${(left + 1 - direction) * 100}%))`;
-            children[right].style.transform = `translateX(calc(${-(right - 1 - direction) * 100}%))`;
-
-
-            let direction = Math.round(Math.abs(x) / width);
             if(x > 0) {
-                timeline.add(new Animation(children[current].style, 'transform', 
-                `calc(-${(position) * 100}% + ${x}px)`, `calc(-${(position - direction) * 100}%)`, duration, 0, linear, v => `translateX(${v})`
-                ));
-                timeline.add(new Animation(children[left].style, 'transform', 
-                `calc(-${(left + 1) * 100}%) + ${x}px)`, `calc(-${(left + 1 - direction) * 100}%)`, duration, 0, linear, v => `translateX(${v})`
-                ));
-                timeline.add(new Animation(children[right].style, 'transform', 
-                `calc(${-(right - 1) * 100}%  + ${x}px)`, `calc(${-(right - 1 - direction) * 100}%)`, duration, 0, linear, v => `translateX(${v})`
-                ));
-                // children[current].style.transform = `translateX(calc(-${(position - direction) * 100}%))`;
-                // children[left].style.transform = `translateX(calc(-${(left + 1 - direction) * 100}%))`;
-                // children[right].style.transform = `translateX(calc(${-(right - 1 - direction) * 100}%))`;
+                // timeline.add(new Animation(children[current].style, 'transform', 
+                // `calc(-${(position+1) * 100}% + ${width * Math.round(Math.abs(x) / width)}px)`, `calc(-${position * 100}% + ${width * Math.round(Math.abs(x) / width)}px)`, duration, 0, linear, v => `translateX(${v})`
+                // ));
+                // timeline.add(new Animation(children[left].style, 'transform', 
+                // `calc(-${(left+2) * 100}% + ${width * Math.round(Math.abs(x) / width)}px)`, `calc(-${(left+1) * 100}% + ${width * Math.round(Math.abs(x) / width)}px)`, duration, 0, linear, v => `translateX(${v})`
+                // ));
+                // timeline.add(new Animation(children[right].style, 'transform', 
+                // `calc(${-(right) * 100}% + ${width * Math.round(Math.abs(x) / width)}px)`, `calc(${-(right - 1) * 100}% + ${width * Math.round(Math.abs(x) / width)}px)`, duration, 0, linear, v => `translateX(${v})`
+                // ));
+                children[current].style.transform = `translateX(calc(-${position * 100}% + ${width * Math.round(Math.abs(x) / width)}px))`;
+                children[left].style.transform = `translateX(calc(-${(left+1) * 100}% + ${width * Math.round(Math.abs(x) / width)}px))`;
+                children[right].style.transform = `translateX(calc(${-(right - 1) * 100}% + ${width * Math.round(Math.abs(x) / width)}px))`;
 
             } else {
                 // timeline.add(new Animation(children[current].style, 'transform', 
                 // `calc(-${(position+1) * 100}% - ${width * Math.round(Math.abs(x) / width)}px)`, `calc(-${position * 100}% - ${width * Math.round(Math.abs(x) / width)}px)`, duration, 0, linear, v => `translateX(${v})`
                 // ));
-                children[current].style.transform = `translateX(calc(-${(position + direction) * 100}%))`;
-                children[left].style.transform = `translateX(calc(-${(left + 1 + direction) * 100}%))`;
-                children[right].style.transform = `translateX(calc(${-(right - 1 + direction) * 100}%))`;
+                children[current].style.transform = `translateX(calc(-${position * 100}% - ${width * Math.round(Math.abs(x) / width)}px))`;
+                children[left].style.transform = `translateX(calc(-${(left+1) * 100}% - ${width * Math.round(Math.abs(x) / width)}px))`;
+                children[right].style.transform = `translateX(calc(${-(right - 1) * 100}% - ${width * Math.round(Math.abs(x) / width)}px))`;
             }
 
             position = (position - Math.round(x / width) + length) % length;
